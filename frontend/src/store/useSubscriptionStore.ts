@@ -8,8 +8,9 @@ type SubscriptionStore = {
   error: string | null;
   fetchSubscriptions: () => Promise<void>;
   addSubscription: (data: NewSubscription) => Promise<void>;
-  updateSubscription: (id: number, data: Partial<NewSubscription>) => Promise<void>;
-  deleteSubscription: (id: number) => Promise<void>;
+  // TODO: Вернуть методы редактирования и удаления для модалки редактирования
+  // updateSubscription: (id: number, data: Partial<NewSubscription>) => Promise<void>;
+  // deleteSubscription: (id: number) => Promise<void>;
 };
 
 export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
@@ -41,6 +42,8 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
     }
   },
 
+  // TODO: Вернуть методы редактирования и удаления для модалки редактирования
+  /*
   updateSubscription: async (id: number, data: Partial<NewSubscription>) => {
     set({ isLoading: true, error: null });
     try {
@@ -70,5 +73,6 @@ export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
       throw error;
     }
   },
+  */
 }));
 

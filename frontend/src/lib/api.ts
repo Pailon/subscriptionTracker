@@ -34,6 +34,9 @@ export async function createSubscription(data: NewSubscription): Promise<Subscri
   });
 }
 
+// TODO: Вернуть функции редактирования и удаления подписок
+// Закомментировано для оптимизации, будет использоваться в будущем для модалки редактирования
+/*
 export async function updateSubscription(
   id: number,
   data: Partial<NewSubscription>
@@ -49,4 +52,5 @@ export async function deleteSubscription(id: number): Promise<void> {
     method: 'DELETE',
   });
 }
+*/
 

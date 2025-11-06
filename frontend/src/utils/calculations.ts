@@ -1,5 +1,5 @@
 import { Subscription } from '../types';
-import { startOfMonth, endOfMonth, addMonths, isSameMonth } from 'date-fns';
+import { isSameMonth } from 'date-fns';
 
 // Рассчитывает общую сумму за текущий месяц
 export function calculateMonthlyTotal(subscriptions: Subscription[]): number {
