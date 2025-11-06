@@ -13,7 +13,7 @@ type SubscriptionStore = {
   // deleteSubscription: (id: number) => Promise<void>;
 };
 
-export const useSubscriptionStore = create<SubscriptionStore>((set, get) => ({
+export const useSubscriptionStore = create<SubscriptionStore>((set) => ({
   subscriptions: [],
   isLoading: false,
   error: null,

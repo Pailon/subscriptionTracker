@@ -75,18 +75,20 @@ export function validateTelegramWebAppData(initData: string, botToken: string): 
   }
 }
 
-export function telegramAuthMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+export function telegramAuthMiddleware(req: AuthenticatedRequest, res: Response, next: NextFunction): void {
   const initData = req.headers['x-telegram-init-data'] as string;
 
   if (!initData) {
-    return res.status(401).json({ error: 'Missing Telegram init data' });
+    res.status(401).json({ error: 'Missing Telegram init data' });
+    return;
   }
 
   const botToken = process.env.TELEGRAM_BOT_TOKEN!;
   const user = validateTelegramWebAppData(initData, botToken);
 
   if (!user) {
-    return res.status(401).json({ error: 'Invalid Telegram init data' });
+    res.status(401).json({ error: 'Invalid Telegram init data' });
+    return;
   }
 
   req.telegramUser = user;

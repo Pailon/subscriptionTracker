@@ -76,10 +76,10 @@ router.post('/', telegramAuthMiddleware, async (req: AuthenticatedRequest, res) 
       })
       .returning();
 
-    res.status(201).json(subscription);
+    return res.status(201).json(subscription);
   } catch (error) {
     console.error('Error creating subscription:', error);
-    res.status(500).json({ error: 'Failed to create subscription' });
+    return res.status(500).json({ error: 'Failed to create subscription' });
   }
 });
 
@@ -113,10 +113,10 @@ router.patch('/:id', telegramAuthMiddleware, async (req: AuthenticatedRequest, r
       return res.status(404).json({ error: 'Subscription not found' });
     }
 
-    res.json(updated);
+    return res.json(updated);
   } catch (error) {
     console.error('Error updating subscription:', error);
-    res.status(500).json({ error: 'Failed to update subscription' });
+    return res.status(500).json({ error: 'Failed to update subscription' });
   }
 });
 
@@ -143,10 +143,10 @@ router.delete('/:id', telegramAuthMiddleware, async (req: AuthenticatedRequest, 
       return res.status(404).json({ error: 'Subscription not found' });
     }
 
-    res.json({ message: 'Subscription deleted' });
+    return res.json({ message: 'Subscription deleted' });
   } catch (error) {
     console.error('Error deleting subscription:', error);
-    res.status(500).json({ error: 'Failed to delete subscription' });
+    return res.status(500).json({ error: 'Failed to delete subscription' });
   }
 });
 

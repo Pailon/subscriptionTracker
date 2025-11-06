@@ -10,7 +10,7 @@ import {
   subMonths,
 } from 'date-fns';
 import { ru } from 'date-fns/locale';
-import { getCalendarSubscriptions, formatPrice } from '../utils/calculations';
+import { getCalendarSubscriptions } from '../utils/calculations';
 
 type CalendarProps = {
   subscriptions: Subscription[];

@@ -23,7 +23,7 @@ app.use('/api/subscriptions', subscriptionsRouter);
 app.use('/api/webhook', webhookRouter);
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
