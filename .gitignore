@@ -46,6 +46,3 @@ postgres-data/
 
 # TypeScript
 *.tsbuildinfo
-
-# Drizzle
-drizzle/

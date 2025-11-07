@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1762544627090,
+      "tag": "0000_zippy_the_initiative",
+      "breakpoints": true
+    }
+  ]
+}
