@@ -38,9 +38,6 @@ services:
       WEBHOOK_URL: ${WEBHOOK_URL}
     ports:
       - "3000:3000"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
 
 volumes:
   postgres-data:
