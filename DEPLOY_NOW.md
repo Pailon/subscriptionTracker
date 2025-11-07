@@ -34,7 +34,25 @@ docker-compose build --no-cache
 docker-compose up -d
 ```
 
-### 6. Проверьте логи
+### 6. Примените миграции базы данных
+```bash
+# Войдите в контейнер backend
+docker-compose exec backend sh
+
+# Внутри контейнера выполните миграцию
+npm run db:migrate
+
+# Выйдите из контейнера
+exit
+```
+
+**Что вы должны увидеть:**
+```
+Running migrations...
+Migrations completed!
+```
+
+### 7. Проверьте логи
 ```bash
 docker-compose logs -f backend
 ```
@@ -45,7 +63,7 @@ subscription_tracker_backend | 🚀 Server running on port 3000
 subscription_tracker_backend | 📊 Environment: production
 ```
 
-### 7. Проверьте health endpoint
+### 8. Проверьте health endpoint
 ```bash
 curl http://localhost:3000/health
 ```
