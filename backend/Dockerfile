@@ -8,22 +8,17 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-# Проверка что файлы созданы
-RUN ls -la dist/
-
 FROM node:20-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/drizzle ./drizzle
-
-# Проверка что файлы скопированы
-RUN ls -la dist/
-RUN ls -la drizzle/
+COPY --from=builder /app/src/db ./src/db
+COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 
 EXPOSE 3000
 
