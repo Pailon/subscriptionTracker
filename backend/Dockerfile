@@ -8,6 +8,9 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
+# Проверка что файлы созданы
+RUN ls -la dist/
+
 FROM node:20-alpine
 
 WORKDIR /app
@@ -16,6 +19,9 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
+
+# Проверка что файлы скопированы
+RUN ls -la dist/
 
 EXPOSE 3000
 
