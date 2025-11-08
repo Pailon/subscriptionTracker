@@ -61,6 +61,25 @@ export function calculateDaysUntil(currentDay: number, billingDay: number): numb
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
+// Проверяет, должна ли подписка списываться в данном месяце с учетом периода
+function shouldBillInMonth(subscription: Subscription, targetMonth: Date): boolean {
+  const createdDate = new Date(subscription.createdAt);
+  const periodMonths = subscription.periodMonths || 1;
+  
+  // Если период 1 месяц - списывается каждый месяц
+  if (periodMonths === 1) {
+    return true;
+  }
+  
+  // Вычисляем количество месяцев между датой создания и целевым месяцем
+  const monthsDiff = 
+    (targetMonth.getFullYear() - createdDate.getFullYear()) * 12 +
+    (targetMonth.getMonth() - createdDate.getMonth());
+  
+  // Проверяем, кратно ли количество месяцев периоду
+  return monthsDiff >= 0 && monthsDiff % periodMonths === 0;
+}
+
 // Получает подписки для календаря (текущий и следующий месяц)
 export function getCalendarSubscriptions(
   subscriptions: Subscription[],
@@ -71,6 +90,11 @@ export function getCalendarSubscriptions(
   const activeSubscriptions = subscriptions.filter((sub) => sub.isActive);
 
   for (const sub of activeSubscriptions) {
+    // Проверяем, должна ли подписка списываться в этом месяце
+    if (!shouldBillInMonth(sub, month)) {
+      continue;
+    }
+
     const billingDate = new Date(
       month.getFullYear(),
       month.getMonth(),

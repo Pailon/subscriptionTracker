@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Badge, Modal } from 'antd';
+import { Modal } from 'antd';
 import { Subscription } from '../types';
 import {
   startOfMonth,
@@ -87,18 +87,15 @@ export function Calendar({ subscriptions }: CalendarProps) {
                 ${hasSubscriptions ? 'bg-blue-500 text-white font-bold cursor-pointer hover:bg-blue-600' : 'border border-gray-100 text-gray-900'}
               `}
             >
-              {hasSubscriptions && daySubs.length > 1 && (
-                <Badge
-                  count={daySubs.length}
-                  style={{
-                    position: 'absolute',
-                    top: '2px',
-                    right: '2px',
-                    backgroundColor: '#ef4444',
-                  }}
-                />
-              )}
               <div className="text-sm font-medium">{format(date, 'd')}</div>
+              {hasSubscriptions && daySubs.length > 1 && (
+                <div
+                  className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1"
+                  style={{ transform: 'translate(25%, -25%)' }}
+                >
+                  {daySubs.length}
+                </div>
+              )}
             </div>
           );
         })}

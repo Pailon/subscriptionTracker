@@ -27,6 +27,13 @@ body {
   box-sizing: border-box;
 }
 
+/* Исправление прозрачного выделения в input */
+input::selection,
+textarea::selection {
+  background-color: #3b82f6;
+  color: white;
+}
+
 /* Убираем стрелки у number input */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
@@ -64,5 +71,15 @@ body.modal-open {
 
 .animate-slide-up {
   animation: slide-up 0.3s ease-out;
+}
+
+/* Анимация для кнопки клавиатуры */
+@keyframes slideUpKeyboard {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
 }
 

@@ -4,6 +4,7 @@ import { DownOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
 import { NewSubscription } from '../types';
+import { NumericInput } from './NumericInput';
 
 type AddSubscriptionModalProps = {
   isOpen: boolean;
@@ -152,17 +153,13 @@ export function AddSubscriptionModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">
-                Цена
-              </label>
-              <input
-                type="text"
-                inputMode="decimal"
-                required
+              <NumericInput
+                label="Цена"
                 value={formData.price || ''}
                 onChange={handlePriceChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                 placeholder="0"
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
 
@@ -212,32 +209,24 @@ export function AddSubscriptionModal({
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">
-                Период (месяцев)
-              </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                required
-                value={formData.periodMonths}
+              <NumericInput
+                label="Период (месяцев)"
+                value={formData.periodMonths || ''}
                 onChange={handlePeriodMonthsChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                 placeholder="1-120"
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">
-                Уведомить за (дней)
-              </label>
-              <input
-                type="text"
-                inputMode="numeric"
-                required
-                value={formData.notifyDaysBefore}
+              <NumericInput
+                label="Уведомить за (дней)"
+                value={formData.notifyDaysBefore || ''}
                 onChange={handleNotifyDaysChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
                 placeholder="0-30"
+                required
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>
           </div>
