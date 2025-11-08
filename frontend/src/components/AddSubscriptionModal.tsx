@@ -58,6 +58,17 @@ export function AddSubscriptionModal({
       document.body.classList.add('modal-open');
     } else {
       document.body.classList.remove('modal-open');
+      // Очищаем форму при закрытии
+      setFormData({
+        name: '',
+        price: 0,
+        currency: 'RUB',
+        billingDay: 1,
+        category: '',
+        notifyDaysBefore: 1,
+        periodMonths: 1,
+      });
+      setSelectedDate(dayjs());
     }
 
     return () => {
@@ -110,7 +121,11 @@ export function AddSubscriptionModal({
 
   const handlePeriodMonthsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '');
-    const numValue = value === '' ? 1 : parseInt(value);
+    if (value === '') {
+      setFormData({ ...formData, periodMonths: undefined as any });
+      return;
+    }
+    const numValue = parseInt(value);
     if (numValue >= 1 && numValue <= 120) {
       setFormData({ ...formData, periodMonths: numValue });
     }
@@ -138,16 +153,14 @@ export function AddSubscriptionModal({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Название
-            </label>
-            <input
-              type="text"
-              required
+            <NumericInput
+              label="Название"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               placeholder="Netflix, Spotify..."
+              required
+              inputMode="text"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -159,6 +172,7 @@ export function AddSubscriptionModal({
                 onChange={handlePriceChange}
                 placeholder="0"
                 required
+                inputMode="decimal"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>

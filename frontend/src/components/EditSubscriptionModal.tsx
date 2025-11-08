@@ -114,7 +114,11 @@ export function EditSubscriptionModal({
 
   const handlePeriodMonthsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/\D/g, '');
-    const numValue = value === '' ? 1 : parseInt(value);
+    if (value === '') {
+      setFormData({ ...formData, periodMonths: undefined as any });
+      return;
+    }
+    const numValue = parseInt(value);
     if (numValue >= 1 && numValue <= 120) {
       setFormData({ ...formData, periodMonths: numValue });
     }
@@ -139,8 +143,8 @@ export function EditSubscriptionModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
-      <div className="bg-white rounded-t-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto animate-slide-up">
-        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+      <div className="bg-white rounded-t-2xl w-full max-w-2xl max-h-[85vh] flex flex-col animate-slide-up">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10">
           <h2 className="text-xl font-bold text-gray-900">Редактировать подписку</h2>
           <button
             onClick={onClose}
@@ -150,18 +154,16 @@ export function EditSubscriptionModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
           <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Название
-            </label>
-            <input
-              type="text"
-              required
+            <NumericInput
+              label="Название"
               value={formData.name || ''}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               placeholder="Netflix, Spotify..."
+              required
+              inputMode="text"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             />
           </div>
 
@@ -173,6 +175,7 @@ export function EditSubscriptionModal({
                 onChange={handlePriceChange}
                 placeholder="0"
                 required
+                inputMode="decimal"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               />
             </div>

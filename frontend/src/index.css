@@ -30,8 +30,14 @@ body {
 /* Исправление прозрачного выделения в input */
 input::selection,
 textarea::selection {
-  background-color: #3b82f6;
-  color: white;
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+input::-moz-selection,
+textarea::-moz-selection {
+  background-color: #3b82f6 !important;
+  color: white !important;
 }
 
 /* Убираем стрелки у number input */

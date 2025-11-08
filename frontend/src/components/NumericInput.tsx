@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 type NumericInputProps = {
   value: string | number;
@@ -7,6 +7,7 @@ type NumericInputProps = {
   className?: string;
   required?: boolean;
   label?: string;
+  inputMode?: 'numeric' | 'decimal' | 'text';
 };
 
 export function NumericInput({
@@ -16,9 +17,38 @@ export function NumericInput({
   className,
   required,
   label,
+  inputMode = 'numeric',
 }: NumericInputProps) {
   const [isFocused, setIsFocused] = useState(false);
+  const [showButton, setShowButton] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (isFocused) {
+      // Проверяем, не перекрывает ли кнопка важные элементы
+      const checkPosition = () => {
+        if (inputRef.current) {
+          const rect = inputRef.current.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+          const distanceFromBottom = windowHeight - rect.bottom;
+          
+          // Показываем кнопку только если расстояние от поля до низа экрана больше 150px
+          setShowButton(distanceFromBottom > 150);
+        }
+      };
+      
+      checkPosition();
+      window.addEventListener('scroll', checkPosition);
+      window.addEventListener('resize', checkPosition);
+      
+      return () => {
+        window.removeEventListener('scroll', checkPosition);
+        window.removeEventListener('resize', checkPosition);
+      };
+    } else {
+      setShowButton(false);
+    }
+  }, [isFocused]);
 
   const handleDone = () => {
     if (inputRef.current) {
@@ -37,7 +67,7 @@ export function NumericInput({
       <input
         ref={inputRef}
         type="text"
-        inputMode="numeric"
+        inputMode={inputMode}
         required={required}
         value={value}
         onChange={onChange}
@@ -46,7 +76,7 @@ export function NumericInput({
         className={className}
         placeholder={placeholder}
       />
-      {isFocused && (
+      {isFocused && showButton && (
         <button
           type="button"
           onClick={handleDone}
