@@ -14,6 +14,26 @@ export function NextBilling({ subscriptions, daysLeft, totalAmount }: NextBillin
     ? 'Завтра' 
     : `Через ${daysLeft} ${getDaysWord(daysLeft)}`;
 
+  // Если подписка только одна, показываем простой вариант
+  if (subscriptions.length === 1) {
+    const subscription = subscriptions[0];
+    return (
+      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+        <p className="text-sm text-orange-600 mb-1">Ближайшее списание</p>
+        <div className="flex justify-between items-center">
+          <div>
+            <p className="font-semibold text-gray-900">{subscription.name}</p>
+            <p className="text-sm text-gray-600">{daysText}</p>
+          </div>
+          <p className="text-xl font-bold text-orange-600">
+            {formatPrice(subscription.price, subscription.currency)}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Если подписок несколько, показываем таблицу
   return (
     <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
       <p className="text-sm text-orange-600 mb-2 font-medium">Ближайшее списание</p>

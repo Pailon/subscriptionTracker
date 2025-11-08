@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { initTelegramApp } from './lib/telegram';
 import { useSubscriptionStore } from './store/useSubscriptionStore';
 import { calculateMonthlyTotal, getNextBilling } from './utils/calculations';
@@ -7,31 +7,30 @@ import { NextBilling } from './components/NextBilling';
 import { Calendar } from './components/Calendar';
 import { SubscriptionCard } from './components/SubscriptionCard';
 import { AddSubscriptionModal } from './components/AddSubscriptionModal';
-
-const CATEGORIES = [
-  'Все',
-  'Стриминг',
-  'Музыка',
-  'Видео',
-  'Софт',
-  'Игры',
-  'Облако',
-  'Образование',
-  'Фитнес',
-  'Новости',
-  'Другое',
-];
+import { EditSubscriptionModal } from './components/EditSubscriptionModal';
 
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState('Все');
-  const { subscriptions, isLoading, error, fetchSubscriptions, addSubscription } =
+  const { subscriptions, isLoading, error, fetchSubscriptions, addSubscription, updateSubscription, deleteSubscription } =
     useSubscriptionStore();
 
   useEffect(() => {
     initTelegramApp();
     fetchSubscriptions();
   }, [fetchSubscriptions]);
+
+  // Получаем уникальные категории из подписок пользователя
+  const userCategories = useMemo(() => {
+    const categories = new Set(
+      subscriptions
+        .filter((sub) => sub.category)
+        .map((sub) => sub.category as string)
+    );
+    return ['Все', ...Array.from(categories).sort()];
+  }, [subscriptions]);
 
   const filteredSubscriptions =
     selectedCategory === 'Все'
@@ -40,6 +39,13 @@ function App() {
 
   const monthlyTotal = calculateMonthlyTotal(subscriptions);
   const nextBilling = getNextBilling(subscriptions);
+
+  const handleSubscriptionClick = (id: number) => {
+    setSelectedSubscriptionId(id);
+    setIsEditModalOpen(true);
+  };
+
+  const selectedSubscription = subscriptions.find((sub) => sub.id === selectedSubscriptionId);
 
   if (isLoading && subscriptions.length === 0) {
     return (
@@ -102,27 +108,29 @@ function App() {
             </button>
           </div>
 
-          {/* Карусель категорий */}
-          <div className="mb-4 overflow-x-auto">
-            <div className="flex gap-2 pb-2">
-              {CATEGORIES.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`
-                    px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors
-                    ${
-                      selectedCategory === category
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                    }
-                  `}
-                >
-                  {category}
-                </button>
-              ))}
+          {/* Карусель категорий - показывать только если категорий больше 1 */}
+          {userCategories.length > 2 && (
+            <div className="mb-4 overflow-x-auto">
+              <div className="flex gap-2 pb-2">
+                {userCategories.map((category) => (
+                  <button
+                    key={category}
+                    onClick={() => setSelectedCategory(category)}
+                    className={`
+                      px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors
+                      ${
+                        selectedCategory === category
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                      }
+                    `}
+                  >
+                    {category}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {subscriptions.length === 0 ? (
             <div className="text-center py-12">
@@ -146,10 +154,7 @@ function App() {
                 <SubscriptionCard
                   key={sub.id}
                   subscription={sub}
-                  onClick={() => {
-                    // Можно добавить модалку с деталями
-                    console.log('Subscription clicked:', sub);
-                  }}
+                  onClick={() => handleSubscriptionClick(sub.id)}
                 />
               ))}
             </div>
@@ -163,6 +168,20 @@ function App() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={addSubscription}
       />
+
+      {/* Модалка редактирования */}
+      {selectedSubscription && (
+        <EditSubscriptionModal
+          isOpen={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedSubscriptionId(null);
+          }}
+          subscription={selectedSubscription}
+          onUpdate={updateSubscription}
+          onDelete={deleteSubscription}
+        />
+      )}
     </div>
   );
 }

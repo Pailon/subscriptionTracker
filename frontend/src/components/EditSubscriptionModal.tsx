@@ -1,31 +1,18 @@
 import { useState, useEffect } from 'react';
-import { DatePicker, Dropdown, Select } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { DatePicker, Dropdown, Select, Modal } from 'antd';
+import { DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import dayjs, { Dayjs } from 'dayjs';
-import { NewSubscription } from '../types';
+import { Subscription, NewSubscription } from '../types';
+import { CATEGORIES } from './AddSubscriptionModal';
 
-type AddSubscriptionModalProps = {
+type EditSubscriptionModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: NewSubscription) => Promise<void>;
+  subscription: Subscription;
+  onUpdate: (id: number, data: Partial<NewSubscription>) => Promise<void>;
+  onDelete: (id: number) => Promise<void>;
 };
-
-export const CATEGORIES = [
-  'Стриминг',
-  'Музыка',
-  'Видео',
-  'Софт',
-  'Игры',
-  'Облако',
-  'Образование',
-  'Фитнес',
-  'Новости',
-  'Манга',
-  'Инвестиции',
-  'Книги',
-  'Другое',
-];
 
 const CURRENCIES = [
   { key: 'RUB', label: '₽ RUB', symbol: '₽' },
@@ -33,23 +20,34 @@ const CURRENCIES = [
   { key: 'EUR', label: '€ EUR', symbol: '€' },
 ];
 
-export function AddSubscriptionModal({
+export function EditSubscriptionModal({
   isOpen,
   onClose,
-  onSubmit,
-}: AddSubscriptionModalProps) {
-  const [formData, setFormData] = useState<NewSubscription>({
-    name: '',
-    price: 0,
-    currency: 'RUB',
-    billingDay: 1,
-    category: '',
-    notifyDaysBefore: 1,
-    periodMonths: 1,
-  });
-
-  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
+  subscription,
+  onUpdate,
+  onDelete,
+}: EditSubscriptionModalProps) {
+  const [formData, setFormData] = useState<Partial<NewSubscription>>({});
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (subscription) {
+      setFormData({
+        name: subscription.name,
+        price: subscription.price / 100, // конвертируем из копеек
+        currency: subscription.currency,
+        billingDay: subscription.billingDay,
+        category: subscription.category || '',
+        notifyDaysBefore: subscription.notifyDaysBefore,
+        periodMonths: subscription.periodMonths || 1,
+      });
+      
+      const date = new Date();
+      date.setDate(subscription.billingDay);
+      setSelectedDate(dayjs(date));
+    }
+  }, [subscription]);
 
   // Блокировка прокрутки при открытом модальном окне
   useEffect(() => {
@@ -64,35 +62,41 @@ export function AddSubscriptionModal({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
-      await onSubmit(formData);
-      setFormData({
-        name: '',
-        price: 0,
-        currency: 'RUB',
-        billingDay: 1,
-        category: '',
-        notifyDaysBefore: 1,
-        periodMonths: 1,
-      });
-      setSelectedDate(dayjs());
+      await onUpdate(subscription.id, formData);
       onClose();
     } catch (error) {
-      console.error('Failed to add subscription:', error);
+      console.error('Failed to update subscription:', error);
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const handleDelete = () => {
+    Modal.confirm({
+      title: 'Удалить подписку?',
+      icon: <ExclamationCircleOutlined />,
+      content: `Вы уверены, что хотите удалить подписку "${subscription.name}"?`,
+      okText: 'Удалить',
+      okType: 'danger',
+      cancelText: 'Отмена',
+      onOk: async () => {
+        try {
+          await onDelete(subscription.id);
+          onClose();
+        } catch (error) {
+          console.error('Failed to delete subscription:', error);
+        }
+      },
+    });
+  };
+
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Разрешаем только цифры и точку
     if (value === '' || /^\d*\.?\d*$/.test(value)) {
       const numValue = value === '' ? 0 : parseFloat(value);
       setFormData({ ...formData, price: numValue });
@@ -130,12 +134,22 @@ export function AddSubscriptionModal({
 
   const selectedCurrency = CURRENCIES.find((c) => c.key === formData.currency);
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Новая подписка</h2>
+  if (!isOpen) return null;
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end justify-center z-50">
+      <div className="bg-white rounded-t-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto animate-slide-up">
+        <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-gray-900">Редактировать подписку</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
+          >
+            ×
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1 text-gray-700">
               Название
@@ -143,7 +157,7 @@ export function AddSubscriptionModal({
             <input
               type="text"
               required
-              value={formData.name}
+              value={formData.name || ''}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               placeholder="Netflix, Spotify..."
@@ -242,21 +256,30 @@ export function AddSubscriptionModal({
             </div>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 pt-4 border-t">
+            <button
+              type="button"
+              onClick={handleDelete}
+              className="px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50"
+              disabled={isSubmitting}
+            >
+              Удалить
+            </button>
+            <div className="flex-1" />
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
               disabled={isSubmitting}
             >
               Отмена
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
               disabled={isSubmitting}
             >
-              {isSubmitting ? 'Добавление...' : 'Добавить'}
+              {isSubmitting ? 'Сохранение...' : 'Сохранить'}
             </button>
           </div>
         </form>
