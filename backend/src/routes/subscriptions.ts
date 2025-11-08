@@ -44,7 +44,7 @@ router.get('/', telegramAuthMiddleware, async (req: AuthenticatedRequest, res) =
 router.post('/', telegramAuthMiddleware, async (req: AuthenticatedRequest, res) => {
   try {
     const telegramId = req.telegramUser!.id.toString();
-    const { name, price, currency, billingDay, category, notifyDaysBefore } = req.body;
+    const { name, price, currency, billingDay, category, notifyDaysBefore, periodMonths } = req.body;
 
     // Валидация
     if (!name || !price || !billingDay) {
@@ -73,6 +73,7 @@ router.post('/', telegramAuthMiddleware, async (req: AuthenticatedRequest, res) 
         billingDay,
         category: category || null,
         notifyDaysBefore: notifyDaysBefore || 1,
+        periodMonths: periodMonths || 1,
       })
       .returning();
 

@@ -8,10 +8,11 @@ export function calculateMonthlyTotal(subscriptions: Subscription[]): number {
     .reduce((total, sub) => total + sub.price, 0);
 }
 
-// Находит ближайшее списание
+// Находит все подписки ближайшего дня списания
 export function getNextBilling(subscriptions: Subscription[]): {
-  subscription: Subscription;
+  subscriptions: Subscription[];
   daysLeft: number;
+  totalAmount: number;
 } | null {
   const today = new Date();
   const currentDay = today.getDate();
@@ -22,17 +23,29 @@ export function getNextBilling(subscriptions: Subscription[]): {
     return null;
   }
 
-  let nearest: { subscription: Subscription; daysLeft: number } | null = null;
+  let minDaysLeft = Infinity;
 
+  // Находим минимальное количество дней до списания
   for (const sub of activeSubscriptions) {
     const daysLeft = calculateDaysUntil(currentDay, sub.billingDay);
-
-    if (!nearest || daysLeft < nearest.daysLeft) {
-      nearest = { subscription: sub, daysLeft };
+    if (daysLeft < minDaysLeft) {
+      minDaysLeft = daysLeft;
     }
   }
 
-  return nearest;
+  // Собираем все подписки с этим минимальным количеством дней
+  const nearestSubscriptions = activeSubscriptions.filter((sub) => {
+    const daysLeft = calculateDaysUntil(currentDay, sub.billingDay);
+    return daysLeft === minDaysLeft;
+  });
+
+  const totalAmount = nearestSubscriptions.reduce((sum, sub) => sum + sub.price, 0);
+
+  return {
+    subscriptions: nearestSubscriptions,
+    daysLeft: minDaysLeft,
+    totalAmount,
+  };
 }
 
 // Вычисляет количество дней до даты списания

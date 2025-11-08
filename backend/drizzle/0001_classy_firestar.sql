@@ -1,0 +1,1 @@
+ALTER TABLE "subscriptions" ADD COLUMN "period_months" integer DEFAULT 1;

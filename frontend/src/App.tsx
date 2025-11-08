@@ -8,8 +8,23 @@ import { Calendar } from './components/Calendar';
 import { SubscriptionCard } from './components/SubscriptionCard';
 import { AddSubscriptionModal } from './components/AddSubscriptionModal';
 
+const CATEGORIES = [
+  'Все',
+  'Стриминг',
+  'Музыка',
+  'Видео',
+  'Софт',
+  'Игры',
+  'Облако',
+  'Образование',
+  'Фитнес',
+  'Новости',
+  'Другое',
+];
+
 function App() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('Все');
   const { subscriptions, isLoading, error, fetchSubscriptions, addSubscription } =
     useSubscriptionStore();
 
@@ -17,6 +32,11 @@ function App() {
     initTelegramApp();
     fetchSubscriptions();
   }, [fetchSubscriptions]);
+
+  const filteredSubscriptions =
+    selectedCategory === 'Все'
+      ? subscriptions
+      : subscriptions.filter((sub) => sub.category === selectedCategory);
 
   const monthlyTotal = calculateMonthlyTotal(subscriptions);
   const nextBilling = getNextBilling(subscriptions);
@@ -60,8 +80,9 @@ function App() {
         {/* Ближайшее списание */}
         {nextBilling && (
           <NextBilling
-            subscription={nextBilling.subscription}
+            subscriptions={nextBilling.subscriptions}
             daysLeft={nextBilling.daysLeft}
+            totalAmount={nextBilling.totalAmount}
           />
         )}
 
@@ -81,6 +102,28 @@ function App() {
             </button>
           </div>
 
+          {/* Карусель категорий */}
+          <div className="mb-4 overflow-x-auto">
+            <div className="flex gap-2 pb-2">
+              {CATEGORIES.map((category) => (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  className={`
+                    px-4 py-2 rounded-full whitespace-nowrap text-sm font-medium transition-colors
+                    ${
+                      selectedCategory === category
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    }
+                  `}
+                >
+                  {category}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {subscriptions.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-gray-500 mb-4">У вас пока нет подписок</p>
@@ -91,9 +134,15 @@ function App() {
                 Добавить первую подписку
               </button>
             </div>
+          ) : filteredSubscriptions.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-500 mb-4">
+                Нет подписок в категории "{selectedCategory}"
+              </p>
+            </div>
           ) : (
             <div className="space-y-3">
-              {subscriptions.map((sub) => (
+              {filteredSubscriptions.map((sub) => (
                 <SubscriptionCard
                   key={sub.id}
                   subscription={sub}

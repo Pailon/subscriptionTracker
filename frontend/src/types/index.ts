@@ -8,6 +8,7 @@ export type Subscription = {
   category: string | null;
   isActive: boolean;
   notifyDaysBefore: number;
+  periodMonths?: number; // период подписки в месяцах
   createdAt: string;
   updatedAt: string;
 };
@@ -19,5 +20,6 @@ export type NewSubscription = {
   billingDay: number;
   category?: string;
   notifyDaysBefore?: number;
+  periodMonths?: number; // период подписки в месяцах
 };
 

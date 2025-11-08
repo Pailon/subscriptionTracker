@@ -21,6 +21,7 @@ export const subscriptions = pgTable('subscriptions', {
   category: text('category'),
   isActive: boolean('is_active').notNull().default(true),
   notifyDaysBefore: integer('notify_days_before').notNull().default(1),
+  periodMonths: integer('period_months').default(1), // период подписки в месяцах
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

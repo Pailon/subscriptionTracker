@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react';
+import { DatePicker, Dropdown } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
+import type { MenuProps } from 'antd';
+import dayjs, { Dayjs } from 'dayjs';
 import { NewSubscription } from '../types';
 
 type AddSubscriptionModalProps = {
@@ -20,6 +24,12 @@ const CATEGORIES = [
   'Другое',
 ];
 
+const CURRENCIES = [
+  { key: 'RUB', label: '₽ RUB', symbol: '₽' },
+  { key: 'USD', label: '$ USD', symbol: '$' },
+  { key: 'EUR', label: '€ EUR', symbol: '€' },
+];
+
 export function AddSubscriptionModal({
   isOpen,
   onClose,
@@ -32,8 +42,10 @@ export function AddSubscriptionModal({
     billingDay: 1,
     category: '',
     notifyDaysBefore: 1,
+    periodMonths: 1,
   });
 
+  const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Блокировка прокрутки при открытом модальном окне
@@ -64,12 +76,23 @@ export function AddSubscriptionModal({
         billingDay: 1,
         category: '',
         notifyDaysBefore: 1,
+        periodMonths: 1,
       });
+      setSelectedDate(dayjs());
       onClose();
     } catch (error) {
       console.error('Failed to add subscription:', error);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Разрешаем только цифры и точку
+    if (value === '' || /^\d*\.?\d*$/.test(value)) {
+      const numValue = value === '' ? 0 : parseFloat(value);
+      setFormData({ ...formData, price: numValue });
     }
   };
 
@@ -81,26 +104,32 @@ export function AddSubscriptionModal({
     }
   };
 
-  const handleBillingDayChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const date = new Date(e.target.value);
-    const day = date.getDate();
-    setFormData({ ...formData, billingDay: day });
+  const handlePeriodMonthsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value.replace(/\D/g, '');
+    const numValue = value === '' ? 1 : parseInt(value);
+    if (numValue >= 1 && numValue <= 120) {
+      setFormData({ ...formData, periodMonths: numValue });
+    }
   };
 
-  const getTodayDateString = () => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
+  const handleDateChange = (date: Dayjs | null) => {
+    if (date) {
+      setSelectedDate(date);
+      setFormData({ ...formData, billingDay: date.date() });
+    }
   };
 
-  const getDateFromDay = (day: number) => {
-    const date = new Date();
-    date.setDate(day);
-    return date.toISOString().split('T')[0];
-  };
+  const currencyMenuItems: MenuProps['items'] = CURRENCIES.map((curr) => ({
+    key: curr.key,
+    label: curr.label,
+    onClick: () => setFormData({ ...formData, currency: curr.key }),
+  }));
+
+  const selectedCurrency = CURRENCIES.find((c) => c.key === formData.currency);
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
+      <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Новая подписка</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -124,15 +153,13 @@ export function AddSubscriptionModal({
                 Цена
               </label>
               <input
-                type="number"
+                type="text"
+                inputMode="decimal"
                 required
-                step="0.01"
-                min="0"
-                value={formData.price}
-                onChange={(e) =>
-                  setFormData({ ...formData, price: parseFloat(e.target.value) })
-                }
+                value={formData.price || ''}
+                onChange={handlePriceChange}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                placeholder="0.00"
               />
             </div>
 
@@ -140,22 +167,15 @@ export function AddSubscriptionModal({
               <label className="block text-sm font-medium mb-1 text-gray-700">
                 Валюта
               </label>
-              <select
-                value={formData.currency}
-                onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white appearance-none cursor-pointer"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3E%3Cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3E%3C/svg%3E")`,
-                  backgroundPosition: 'right 0.5rem center',
-                  backgroundRepeat: 'no-repeat',
-                  backgroundSize: '1.5em 1.5em',
-                  paddingRight: '2.5rem',
-                }}
-              >
-                <option value="RUB">₽ RUB</option>
-                <option value="USD">$ USD</option>
-                <option value="EUR">€ EUR</option>
-              </select>
+              <Dropdown menu={{ items: currencyMenuItems }} trigger={['click']}>
+                <button
+                  type="button"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white flex items-center justify-between"
+                >
+                  <span>{selectedCurrency?.label}</span>
+                  <DownOutlined className="text-xs" />
+                </button>
+              </Dropdown>
             </div>
           </div>
 
@@ -163,13 +183,13 @@ export function AddSubscriptionModal({
             <label className="block text-sm font-medium mb-1 text-gray-700">
               День списания
             </label>
-            <input
-              type="date"
-              required
-              value={getDateFromDay(formData.billingDay)}
-              onChange={handleBillingDayChange}
-              min={getTodayDateString()}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+            <DatePicker
+              value={selectedDate}
+              onChange={handleDateChange}
+              format="DD.MM.YYYY"
+              placeholder="Выберите дату"
+              className="w-full"
+              style={{ height: '42px' }}
             />
           </div>
 
@@ -189,7 +209,9 @@ export function AddSubscriptionModal({
                 paddingRight: '2.5rem',
               }}
             >
-              <option value="">Выберите категорию</option>
+              <option value="" disabled>
+                Выберите категорию
+              </option>
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat}
@@ -198,19 +220,36 @@ export function AddSubscriptionModal({
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1 text-gray-700">
-              Уведомить за (дней)
-            </label>
-            <input
-              type="text"
-              inputMode="numeric"
-              required
-              value={formData.notifyDaysBefore}
-              onChange={handleNotifyDaysChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
-              placeholder="0-30"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Период (месяцев)
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                required
+                value={formData.periodMonths}
+                onChange={handlePeriodMonthsChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                placeholder="1-120"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1 text-gray-700">
+                Уведомить за (дней)
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                required
+                value={formData.notifyDaysBefore}
+                onChange={handleNotifyDaysChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
+                placeholder="0-30"
+              />
+            </div>
           </div>
 
           <div className="flex gap-3 pt-4">

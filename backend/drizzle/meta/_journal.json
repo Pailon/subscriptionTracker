@@ -8,6 +8,13 @@
       "when": 1762544627090,
       "tag": "0000_zippy_the_initiative",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1762608845267,
+      "tag": "0001_classy_firestar",
+      "breakpoints": true
     }
   ]
 }

@@ -69,16 +69,11 @@ export function Calendar({ subscriptions }: CalendarProps) {
             <div
               key={date.toISOString()}
               className={`
-                aspect-square p-2 flex flex-col items-center justify-center rounded
-                ${hasSubscriptions ? 'bg-blue-50 border border-blue-200' : 'border border-gray-100'}
+                aspect-square p-2 flex items-center justify-center rounded
+                ${hasSubscriptions ? 'bg-blue-500 text-white font-bold' : 'border border-gray-100 text-gray-900'}
               `}
             >
-              <div className="text-sm font-medium text-gray-900">{format(date, 'd')}</div>
-              {hasSubscriptions && (
-                <div className="text-xs text-blue-600 font-semibold mt-0.5">
-                  {daySubs.length}
-                </div>
-              )}
+              <div className="text-sm font-medium">{format(date, 'd')}</div>
             </div>
           );
         })}
