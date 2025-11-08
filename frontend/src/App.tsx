@@ -23,7 +23,7 @@ function App() {
 
   if (isLoading && subscriptions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Загрузка...</p>
@@ -34,7 +34,7 @@ function App() {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
         <div className="text-center">
           <p className="text-red-600 mb-4">Ошибка: {error}</p>
           <button
@@ -71,7 +71,7 @@ function App() {
         {/* Список подписок */}
         <div>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Все подписки</h2>
+            <h2 className="text-xl font-semibold text-gray-900">Все подписки</h2>
             <button
               onClick={() => setIsModalOpen(true)}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2"

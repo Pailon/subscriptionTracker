@@ -27,3 +27,28 @@ body {
   box-sizing: border-box;
 }
 
+/* Убираем стрелки у number input */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
+/* Стили для date input */
+input[type="date"] {
+  position: relative;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+/* Блокировка прокрутки */
+body.modal-open {
+  overflow: hidden;
+}
+

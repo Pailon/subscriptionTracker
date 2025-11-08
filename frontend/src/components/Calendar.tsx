@@ -34,31 +34,31 @@ export function Calendar({ subscriptions }: CalendarProps) {
       <div className="flex justify-between items-center mb-4">
         <button
           onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="p-2 hover:bg-gray-100 rounded"
+          className="p-2 hover:bg-gray-100 rounded text-gray-700"
         >
           ←
         </button>
-        <h2 className="text-lg font-semibold">
+        <h2 className="text-lg font-semibold text-gray-900">
           {format(currentMonth, 'LLLL yyyy', { locale: ru })}
         </h2>
         <button
           onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="p-2 hover:bg-gray-100 rounded"
+          className="p-2 hover:bg-gray-100 rounded text-gray-700"
         >
           →
         </button>
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-2">
         {['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].map((day) => (
-          <div key={day} className="text-center text-xs text-gray-500 py-2">
+          <div key={day} className="text-center text-xs font-medium text-gray-500 py-2">
             {day}
           </div>
         ))}
 
         {/* Пустые ячейки для выравнивания */}
         {Array.from({ length: (monthStart.getDay() + 6) % 7 }).map((_, i) => (
-          <div key={`empty-${i}`} />
+          <div key={`empty-${i}`} className="aspect-square" />
         ))}
 
         {daysInMonth.map((date) => {
@@ -69,13 +69,13 @@ export function Calendar({ subscriptions }: CalendarProps) {
             <div
               key={date.toISOString()}
               className={`
-                aspect-square p-1 text-center rounded
-                ${hasSubscriptions ? 'bg-blue-50 border border-blue-200' : ''}
+                aspect-square p-2 flex flex-col items-center justify-center rounded
+                ${hasSubscriptions ? 'bg-blue-50 border border-blue-200' : 'border border-gray-100'}
               `}
             >
-              <div className="text-sm font-medium">{format(date, 'd')}</div>
+              <div className="text-sm font-medium text-gray-900">{format(date, 'd')}</div>
               {hasSubscriptions && (
-                <div className="text-xs text-blue-600 mt-1">
+                <div className="text-xs text-blue-600 font-semibold mt-0.5">
                   {daySubs.length}
                 </div>
               )}
