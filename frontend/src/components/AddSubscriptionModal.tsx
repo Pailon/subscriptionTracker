@@ -53,14 +53,18 @@ export function AddSubscriptionModal({
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
 
   // Блокировка прокрутки при открытом модальном окне
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('modal-open');
       setIsClosing(false);
+      // Небольшая задержка для анимации появления
+      setTimeout(() => setIsVisible(true), 10);
     } else {
       document.body.classList.remove('modal-open');
+      setIsVisible(false);
       // Очищаем форму при закрытии
       setFormData({
         name: '',
@@ -81,13 +85,15 @@ export function AddSubscriptionModal({
   }, [isOpen]);
 
   const handleClose = () => {
+    setIsVisible(false);
     setIsClosing(true);
     setTimeout(() => {
+      setIsClosing(false);
       onClose();
     }, 300); // Длительность анимации
   };
 
-  if (!isOpen && !isClosing) return null;
+  if (!isOpen) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,14 +167,14 @@ export function AddSubscriptionModal({
   return (
     <div
       className={`fixed inset-0 bg-black flex items-end md:items-center justify-center md:p-4 z-50 transition-opacity duration-300 ${
-        isClosing ? 'bg-opacity-0' : 'bg-opacity-50'
+        isVisible ? 'bg-opacity-50' : 'bg-opacity-0'
       }`}
       style={{ height: '100dvh' }}
       onClick={handleClose}
     >
       <div
         className={`bg-white rounded-t-2xl md:rounded-lg max-w-md w-full p-6 max-h-[85dvh] md:max-h-[90vh] overflow-y-auto transition-transform duration-300 ${
-          isClosing ? 'translate-y-full' : 'translate-y-0'
+          isVisible ? 'translate-y-0' : 'translate-y-full'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
