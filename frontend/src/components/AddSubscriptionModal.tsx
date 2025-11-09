@@ -52,14 +52,12 @@ export function AddSubscriptionModal({
 
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   // Блокировка прокрутки при открытом модальном окне
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('modal-open');
-      setIsClosing(false);
       // Небольшая задержка для анимации появления
       setTimeout(() => setIsVisible(true), 10);
     } else {
@@ -86,9 +84,7 @@ export function AddSubscriptionModal({
 
   const handleClose = () => {
     setIsVisible(false);
-    setIsClosing(true);
     setTimeout(() => {
-      setIsClosing(false);
       onClose();
     }, 300); // Длительность анимации
   };

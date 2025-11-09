@@ -31,7 +31,6 @@ export function EditSubscriptionModal({
   const [formData, setFormData] = useState<Partial<NewSubscription>>({});
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isClosing, setIsClosing] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
@@ -57,7 +56,6 @@ export function EditSubscriptionModal({
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('modal-open');
-      setIsClosing(false);
       // Небольшая задержка для анимации появления
       setTimeout(() => setIsVisible(true), 10);
     } else {
@@ -72,9 +70,7 @@ export function EditSubscriptionModal({
 
   const handleClose = () => {
     setIsVisible(false);
-    setIsClosing(true);
     setTimeout(() => {
-      setIsClosing(false);
       onClose();
     }, 300); // Длительность анимации
   };
