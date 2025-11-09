@@ -52,11 +52,13 @@ export function AddSubscriptionModal({
 
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   // Блокировка прокрутки при открытом модальном окне
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('modal-open');
+      setIsClosing(false);
     } else {
       document.body.classList.remove('modal-open');
       // Очищаем форму при закрытии
@@ -78,7 +80,14 @@ export function AddSubscriptionModal({
     };
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 300); // Длительность анимации
+  };
+
+  if (!isOpen && !isClosing) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,7 +106,7 @@ export function AddSubscriptionModal({
         autoRenewal: true,
       });
       setSelectedDate(dayjs());
-      onClose();
+      handleClose();
     } catch (error) {
       console.error('Failed to add subscription:', error);
     } finally {
@@ -151,12 +160,16 @@ export function AddSubscriptionModal({
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center md:p-4 z-50"
+      className={`fixed inset-0 bg-black flex items-end md:items-center justify-center md:p-4 z-50 transition-opacity duration-300 ${
+        isClosing ? 'bg-opacity-0' : 'bg-opacity-50'
+      }`}
       style={{ height: '100dvh' }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
-        className="bg-white rounded-t-2xl md:rounded-lg max-w-md w-full p-6 max-h-[85dvh] md:max-h-[90vh] overflow-y-auto animate-slide-up"
+        className={`bg-white rounded-t-2xl md:rounded-lg max-w-md w-full p-6 max-h-[85dvh] md:max-h-[90vh] overflow-y-auto transition-transform duration-300 ${
+          isClosing ? 'translate-y-full' : 'translate-y-0'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Новая подписка</h2>
@@ -292,7 +305,7 @@ export function AddSubscriptionModal({
           <div className="flex gap-3 pt-4">
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
               disabled={isSubmitting}
             >

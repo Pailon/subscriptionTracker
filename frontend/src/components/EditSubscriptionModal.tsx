@@ -31,6 +31,7 @@ export function EditSubscriptionModal({
   const [formData, setFormData] = useState<Partial<NewSubscription>>({});
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
   useEffect(() => {
     if (subscription) {
@@ -44,7 +45,7 @@ export function EditSubscriptionModal({
         periodMonths: subscription.periodMonths || 1,
         autoRenewal: subscription.autoRenewal,
       });
-      
+
       const date = new Date();
       date.setDate(subscription.billingDay);
       setSelectedDate(dayjs(date));
@@ -55,6 +56,7 @@ export function EditSubscriptionModal({
   useEffect(() => {
     if (isOpen) {
       document.body.classList.add('modal-open');
+      setIsClosing(false);
     } else {
       document.body.classList.remove('modal-open');
     }
@@ -64,13 +66,20 @@ export function EditSubscriptionModal({
     };
   }, [isOpen]);
 
+  const handleClose = () => {
+    setIsClosing(true);
+    setTimeout(() => {
+      onClose();
+    }, 300); // Длительность анимации
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
     try {
       await onUpdate(subscription.id, formData);
-      onClose();
+      handleClose();
     } catch (error) {
       console.error('Failed to update subscription:', error);
     } finally {
@@ -89,7 +98,7 @@ export function EditSubscriptionModal({
       onOk: async () => {
         try {
           await onDelete(subscription.id);
-          onClose();
+          handleClose();
         } catch (error) {
           console.error('Failed to delete subscription:', error);
         }
@@ -140,22 +149,26 @@ export function EditSubscriptionModal({
 
   const selectedCurrency = CURRENCIES.find((c) => c.key === formData.currency);
 
-  if (!isOpen) return null;
+  if (!isOpen && !isClosing) return null;
 
   return (
     <div
-      className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center md:p-4 z-50"
+      className={`fixed inset-0 bg-black flex items-end md:items-center justify-center md:p-4 z-50 transition-opacity duration-300 ${
+        isClosing ? 'bg-opacity-0' : 'bg-opacity-50'
+      }`}
       style={{ height: '100dvh' }}
-      onClick={onClose}
+      onClick={handleClose}
     >
       <div
-        className="bg-white rounded-t-2xl md:rounded-lg w-full max-w-2xl max-h-[85dvh] md:max-h-[90vh] flex flex-col animate-slide-up"
+        className={`bg-white rounded-t-2xl md:rounded-lg w-full max-w-2xl max-h-[85dvh] md:max-h-[90vh] flex flex-col transition-transform duration-300 ${
+          isClosing ? 'translate-y-full' : 'translate-y-0'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10">
           <h2 className="text-xl font-bold text-gray-900">Редактировать подписку</h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="text-gray-400 hover:text-gray-600 text-2xl leading-none"
           >
             ×
@@ -302,7 +315,7 @@ export function EditSubscriptionModal({
             <div className="flex-1" />
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
               disabled={isSubmitting}
             >
