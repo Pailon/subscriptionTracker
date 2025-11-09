@@ -150,8 +150,8 @@ export function AddSubscriptionModal({
   const selectedCurrency = CURRENCIES.find((c) => c.key === formData.currency);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center md:p-4 z-50">
+      <div className="bg-white rounded-t-2xl md:rounded-lg max-w-md w-full p-6 max-h-[85vh] md:max-h-[90vh] overflow-y-auto animate-slide-up">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Новая подписка</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
