@@ -185,7 +185,11 @@ export function EditSubscriptionModal({
               <label className="block text-sm font-medium mb-1 text-gray-700">
                 Валюта
               </label>
-              <Dropdown menu={{ items: currencyMenuItems }} trigger={['click']}>
+              <Dropdown
+                menu={{ items: currencyMenuItems }}
+                trigger={['click']}
+                getPopupContainer={(trigger) => trigger.parentElement || document.body}
+              >
                 <button
                   type="button"
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white flex items-center justify-between"
@@ -208,6 +212,7 @@ export function EditSubscriptionModal({
               placeholder="Выберите дату"
               className="w-full"
               style={{ height: '42px' }}
+              getPopupContainer={(trigger) => trigger.parentElement || document.body}
             />
           </div>
 
@@ -222,6 +227,7 @@ export function EditSubscriptionModal({
               className="w-full"
               style={{ height: '42px' }}
               options={CATEGORIES.map((cat) => ({ label: cat, value: cat }))}
+              getPopupContainer={(trigger) => trigger.parentElement || document.body}
             />
           </div>
 
