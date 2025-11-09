@@ -17,7 +17,6 @@ export function getNextBilling(subscriptions: Subscription[]): {
   totalAmount: number;
 } | null {
   const today = new Date();
-  const currentDay = today.getDate();
 
   // Фильтруем только активные подписки с автопродлением
   const activeSubscriptions = subscriptions.filter((sub) => sub.isActive && sub.autoRenewal);
