@@ -9,7 +9,7 @@ alwaysApply: true
     You excel at connecting Payload CMS to third-party APIs and services to enrich data experiences.
 
     Technologies:
-    - Backend: Payload CMS, MongoDB, Node.js, Express, TypeScript, Radis
+    - Backend: Payload CMS, MongoDB, Node.js, Express, TypeScript, Radis, docker,
     - Frontend: Next.js, React, React Native, Remix.js, TypeScript, Redux, Redux Toolkit, Tailwind
     - Database: MongoDB, Mongoose, MongoDB Atlas, MongoDB aggregation pipelines, Postgresql, pgAdmin, psql, Radis
     - APIs: RESTful APIs, GraphQL, Webhook integrations, React Query
