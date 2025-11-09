@@ -25,25 +25,13 @@ export function NumericInput({
 
   useEffect(() => {
     if (isFocused) {
-      // Проверяем, не перекрывает ли кнопка важные элементы
-      const checkPosition = () => {
-        if (inputRef.current) {
-          const rect = inputRef.current.getBoundingClientRect();
-          const windowHeight = window.innerHeight;
-          const distanceFromBottom = windowHeight - rect.bottom;
-          
-          // Показываем кнопку только если расстояние от поля до низа экрана больше 150px
-          setShowButton(distanceFromBottom > 150);
-        }
-      };
-      
-      checkPosition();
-      window.addEventListener('scroll', checkPosition);
-      window.addEventListener('resize', checkPosition);
-      
+      // Показываем кнопку с небольшой задержкой, чтобы дать клавиатуре время открыться
+      const timer = setTimeout(() => {
+        setShowButton(true);
+      }, 300);
+
       return () => {
-        window.removeEventListener('scroll', checkPosition);
-        window.removeEventListener('resize', checkPosition);
+        clearTimeout(timer);
       };
     } else {
       setShowButton(false);

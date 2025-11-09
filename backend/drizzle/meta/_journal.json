@@ -15,6 +15,13 @@
       "when": 1762608845267,
       "tag": "0001_classy_firestar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1762713080437,
+      "tag": "0002_thin_spacker_dave",
+      "breakpoints": true
     }
   ]
 }

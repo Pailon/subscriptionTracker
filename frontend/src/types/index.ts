@@ -9,6 +9,7 @@ export type Subscription = {
   isActive: boolean;
   notifyDaysBefore: number;
   periodMonths?: number; // период подписки в месяцах
+  autoRenewal: boolean; // автопродление подписки
   createdAt: string;
   updatedAt: string;
 };
@@ -21,5 +22,6 @@ export type NewSubscription = {
   category?: string;
   notifyDaysBefore?: number;
   periodMonths?: number; // период подписки в месяцах
+  autoRenewal?: boolean; // автопродление подписки
 };
 

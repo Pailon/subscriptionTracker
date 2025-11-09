@@ -22,6 +22,7 @@ export const subscriptions = pgTable('subscriptions', {
   isActive: boolean('is_active').notNull().default(true),
   notifyDaysBefore: integer('notify_days_before').notNull().default(1),
   periodMonths: integer('period_months').default(1), // период подписки в месяцах
+  autoRenewal: boolean('auto_renewal').notNull().default(true), // автопродление подписки
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

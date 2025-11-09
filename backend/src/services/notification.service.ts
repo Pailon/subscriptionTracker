@@ -9,9 +9,8 @@ const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN!, { polling: false })
 export async function checkAndNotifySubscriptions() {
   try {
     const today = new Date();
-    const currentDay = today.getDate();
 
-    // Получаем все активные подписки
+    // Получаем все активные подписки с автопродлением
     const activeSubscriptions = await db
       .select({
         subscription: subscriptions,
@@ -22,7 +21,18 @@ export async function checkAndNotifySubscriptions() {
       .where(eq(subscriptions.isActive, true));
 
     for (const { subscription, user } of activeSubscriptions) {
-      const daysUntilBilling = calculateDaysUntil(currentDay, subscription.billingDay);
+      // Пропускаем подписки без автопродления
+      if (!subscription.autoRenewal) {
+        continue;
+      }
+
+      // Получаем следующую дату списания с учетом периода
+      const nextBillingDate = getNextBillingDate(subscription, today);
+      if (!nextBillingDate) {
+        continue;
+      }
+
+      const daysUntilBilling = Math.ceil((nextBillingDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
       // Если осталось столько дней, сколько указано в настройках уведомлений
       if (daysUntilBilling === subscription.notifyDaysBefore) {
@@ -43,11 +53,32 @@ export async function checkAndNotifySubscriptions() {
   }
 }
 
+// Находит следующую дату списания с учетом периода
+function getNextBillingDate(subscription: any, fromDate: Date): Date | null {
+  const createdDate = new Date(subscription.createdAt);
+  const periodMonths = subscription.periodMonths || 1;
+
+  // Начинаем с даты создания подписки
+  let nextDate = new Date(createdDate.getFullYear(), createdDate.getMonth(), subscription.billingDay);
+
+  // Если начальная дата меньше даты создания, начинаем с даты создания
+  if (nextDate < createdDate) {
+    nextDate = new Date(createdDate.getFullYear(), createdDate.getMonth() + periodMonths, subscription.billingDay);
+  }
+
+  // Находим следующую дату списания после fromDate
+  while (nextDate <= fromDate) {
+    nextDate = new Date(nextDate.getFullYear(), nextDate.getMonth() + periodMonths, subscription.billingDay);
+  }
+
+  return nextDate;
+}
+
 function calculateDaysUntil(currentDay: number, billingDay: number): number {
   if (billingDay >= currentDay) {
     return billingDay - currentDay;
   }
-  
+
   // Если день списания уже прошёл в этом месяце, считаем до следующего месяца
   const today = new Date();
   const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, billingDay);

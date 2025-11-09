@@ -3,8 +3,10 @@ import { isSameMonth } from 'date-fns';
 
 // Рассчитывает общую сумму за текущий месяц
 export function calculateMonthlyTotal(subscriptions: Subscription[]): number {
+  const today = new Date();
   return subscriptions
-    .filter((sub) => sub.isActive)
+    .filter((sub) => sub.isActive && sub.autoRenewal)
+    .filter((sub) => shouldBillInMonth(sub, today))
     .reduce((total, sub) => total + sub.price, 0);
 }
 
@@ -17,26 +19,42 @@ export function getNextBilling(subscriptions: Subscription[]): {
   const today = new Date();
   const currentDay = today.getDate();
 
-  const activeSubscriptions = subscriptions.filter((sub) => sub.isActive);
+  // Фильтруем только активные подписки с автопродлением
+  const activeSubscriptions = subscriptions.filter((sub) => sub.isActive && sub.autoRenewal);
 
   if (activeSubscriptions.length === 0) {
     return null;
   }
 
   let minDaysLeft = Infinity;
+  let nearestDate: Date | null = null;
 
-  // Находим минимальное количество дней до списания
+  // Находим минимальное количество дней до следующего списания с учетом периода
   for (const sub of activeSubscriptions) {
-    const daysLeft = calculateDaysUntil(currentDay, sub.billingDay);
-    if (daysLeft < minDaysLeft) {
-      minDaysLeft = daysLeft;
+    const nextBillingDate = getNextBillingDate(sub, today);
+    if (nextBillingDate) {
+      const daysLeft = Math.ceil((nextBillingDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+      if (daysLeft < minDaysLeft) {
+        minDaysLeft = daysLeft;
+        nearestDate = nextBillingDate;
+      }
     }
   }
 
-  // Собираем все подписки с этим минимальным количеством дней
+  if (!nearestDate) {
+    return null;
+  }
+
+  // Собираем все подписки с этой минимальной датой
   const nearestSubscriptions = activeSubscriptions.filter((sub) => {
-    const daysLeft = calculateDaysUntil(currentDay, sub.billingDay);
-    return daysLeft === minDaysLeft;
+    const nextBillingDate = getNextBillingDate(sub, today);
+    if (!nextBillingDate) return false;
+
+    return (
+      nextBillingDate.getDate() === nearestDate!.getDate() &&
+      nextBillingDate.getMonth() === nearestDate!.getMonth() &&
+      nextBillingDate.getFullYear() === nearestDate!.getFullYear()
+    );
   });
 
   const totalAmount = nearestSubscriptions.reduce((sum, sub) => sum + sub.price, 0);
@@ -46,6 +64,27 @@ export function getNextBilling(subscriptions: Subscription[]): {
     daysLeft: minDaysLeft,
     totalAmount,
   };
+}
+
+// Находит следующую дату списания с учетом периода
+function getNextBillingDate(subscription: Subscription, fromDate: Date): Date | null {
+  const createdDate = new Date(subscription.createdAt);
+  const periodMonths = subscription.periodMonths || 1;
+
+  // Начинаем с даты создания подписки
+  let nextDate = new Date(createdDate.getFullYear(), createdDate.getMonth(), subscription.billingDay);
+
+  // Если начальная дата меньше даты создания, начинаем с даты создания
+  if (nextDate < createdDate) {
+    nextDate = new Date(createdDate.getFullYear(), createdDate.getMonth() + periodMonths, subscription.billingDay);
+  }
+
+  // Находим следующую дату списания после fromDate
+  while (nextDate <= fromDate) {
+    nextDate = new Date(nextDate.getFullYear(), nextDate.getMonth() + periodMonths, subscription.billingDay);
+  }
+
+  return nextDate;
 }
 
 // Вычисляет количество дней до даты списания
@@ -87,7 +126,8 @@ export function getCalendarSubscriptions(
 ): Array<{ date: Date; subscription: Subscription }> {
   const result: Array<{ date: Date; subscription: Subscription }> = [];
 
-  const activeSubscriptions = subscriptions.filter((sub) => sub.isActive);
+  // Фильтруем только активные подписки с автопродлением
+  const activeSubscriptions = subscriptions.filter((sub) => sub.isActive && sub.autoRenewal);
 
   for (const sub of activeSubscriptions) {
     // Проверяем, должна ли подписка списываться в этом месяце

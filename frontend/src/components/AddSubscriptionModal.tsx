@@ -47,6 +47,7 @@ export function AddSubscriptionModal({
     category: '',
     notifyDaysBefore: 1,
     periodMonths: 1,
+    autoRenewal: true,
   });
 
   const [selectedDate, setSelectedDate] = useState<Dayjs | null>(dayjs());
@@ -67,6 +68,7 @@ export function AddSubscriptionModal({
         category: '',
         notifyDaysBefore: 1,
         periodMonths: 1,
+        autoRenewal: true,
       });
       setSelectedDate(dayjs());
     }
@@ -92,6 +94,7 @@ export function AddSubscriptionModal({
         category: '',
         notifyDaysBefore: 1,
         periodMonths: 1,
+        autoRenewal: true,
       });
       setSelectedDate(dayjs());
       onClose();
@@ -224,25 +227,45 @@ export function AddSubscriptionModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <NumericInput
-                label="Период (месяцев)"
+                label="Длительность (месяцев)"
                 value={formData.periodMonths || ''}
                 onChange={handlePeriodMonthsChange}
                 placeholder="1-120"
                 required
+                inputMode="numeric"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               />
+              <p className="text-xs text-gray-500 mt-1">На сколько месяцев оформлена подписка</p>
             </div>
 
             <div>
               <NumericInput
                 label="Уведомить за (дней)"
-                value={formData.notifyDaysBefore || ''}
+                value={formData.notifyDaysBefore !== undefined ? formData.notifyDaysBefore : ''}
                 onChange={handleNotifyDaysChange}
                 placeholder="0-30"
                 required
+                inputMode="numeric"
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
               />
+              <p className="text-xs text-gray-500 mt-1">0 = уведомить в день списания</p>
             </div>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              id="autoRenewal"
+              checked={formData.autoRenewal}
+              onChange={(e) => setFormData({ ...formData, autoRenewal: e.target.checked })}
+              className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <label htmlFor="autoRenewal" className="text-sm text-gray-700">
+              <span className="font-medium">Автопродление</span>
+              <p className="text-xs text-gray-500 mt-0.5">
+                Подписка будет отображаться в календаре и приходить уведомления каждые {formData.periodMonths || 1} {formData.periodMonths === 1 ? 'месяц' : formData.periodMonths && formData.periodMonths < 5 ? 'месяца' : 'месяцев'}
+              </p>
+            </label>
           </div>
 
           <div className="flex gap-3 pt-4">
