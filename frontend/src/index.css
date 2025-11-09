@@ -45,7 +45,17 @@ button {
   }
 }
 
-/* Исправление прозрачного выделения в input */
+/* Исправление прозрачного выделения */
+::selection {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+::-moz-selection {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
 input::selection,
 textarea::selection {
   background-color: #3b82f6 !important;
