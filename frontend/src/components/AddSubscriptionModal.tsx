@@ -154,7 +154,7 @@ export function AddSubscriptionModal({
       <div className="bg-white rounded-t-2xl md:rounded-lg max-w-md w-full p-6 max-h-[85dvh] md:max-h-[90vh] overflow-y-auto animate-slide-up">
         <h2 className="text-2xl font-bold mb-4 text-gray-900">Новая подписка</h2>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 pb-20">
           <div>
             <NumericInput
               label="Название"

@@ -155,7 +155,7 @@ export function EditSubscriptionModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1 pb-24">
           <div>
             <NumericInput
               label="Название"
