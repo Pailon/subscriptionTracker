@@ -169,14 +169,16 @@ export function AddSubscriptionModal({
       onClick={handleClose}
     >
       <div
-        className={`bg-white rounded-t-2xl md:rounded-lg max-w-md w-full p-6 max-h-[85dvh] md:max-h-[90vh] overflow-y-auto transition-transform duration-300 ${
+        className={`bg-white rounded-t-2xl md:rounded-lg max-w-md w-full max-h-[85dvh] md:max-h-[90vh] flex flex-col transition-transform duration-300 ${
           isVisible ? 'translate-y-0' : 'translate-y-full'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-2xl font-bold mb-4 text-gray-900">Новая подписка</h2>
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h2 className="text-2xl font-bold text-gray-900">Новая подписка</h2>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 pb-20">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto flex-1 pb-24">
           <div>
             <NumericInput
               label="Название"
