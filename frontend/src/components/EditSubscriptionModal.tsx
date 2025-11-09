@@ -143,8 +143,8 @@ export function EditSubscriptionModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center md:p-4 z-50">
-      <div className="bg-white rounded-t-2xl md:rounded-lg w-full max-w-2xl max-h-[85vh] md:max-h-[90vh] flex flex-col animate-slide-up">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-end md:items-center justify-center md:p-4 z-50" style={{ height: '100dvh' }}>
+      <div className="bg-white rounded-t-2xl md:rounded-lg w-full max-w-2xl max-h-[85dvh] md:max-h-[90vh] flex flex-col animate-slide-up">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center z-10">
           <h2 className="text-xl font-bold text-gray-900">Редактировать подписку</h2>
           <button

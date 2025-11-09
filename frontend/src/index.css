@@ -63,6 +63,9 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* Блокировка прокрутки */
 body.modal-open {
   overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
 }
 
 /* Анимация для модального окна снизу */
@@ -86,6 +89,18 @@ body.modal-open {
   }
   to {
     transform: translateY(0);
+  }
+}
+
+/* Предотвращение изменения viewport при открытии клавиатуры */
+@supports (-webkit-touch-callout: none) {
+  /* iOS Safari */
+  .fixed.inset-0 {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 }
 
