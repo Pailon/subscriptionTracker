@@ -21,10 +21,28 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--tg-theme-bg-color);
   color: var(--tg-theme-text-color);
+  touch-action: pan-y;
+  -webkit-text-size-adjust: 100%;
 }
 
 * {
   box-sizing: border-box;
+}
+
+/* Предотвращение автозума на мобильных устройствах */
+input,
+textarea,
+select,
+button {
+  font-size: 16px !important;
+}
+
+@media screen and (max-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
 /* Исправление прозрачного выделения в input */
@@ -102,5 +120,17 @@ body.modal-open {
     left: 0;
     right: 0;
   }
+}
+
+/* Предотвращение автозума для Ant Design компонентов */
+.ant-picker-input > input,
+.ant-select-selection-search-input,
+.ant-input {
+  font-size: 16px !important;
+}
+
+/* Запрет масштабирования для календаря */
+.ant-picker-dropdown {
+  touch-action: none;
 }
 
