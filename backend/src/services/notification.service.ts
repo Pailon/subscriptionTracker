@@ -74,18 +74,6 @@ function getNextBillingDate(subscription: any, fromDate: Date): Date | null {
   return nextDate;
 }
 
-function calculateDaysUntil(currentDay: number, billingDay: number): number {
-  if (billingDay >= currentDay) {
-    return billingDay - currentDay;
-  }
-
-  // Если день списания уже прошёл в этом месяце, считаем до следующего месяца
-  const today = new Date();
-  const nextMonth = new Date(today.getFullYear(), today.getMonth() + 1, billingDay);
-  const diffTime = nextMonth.getTime() - today.getTime();
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-}
-
 function formatNotificationMessage(subscription: any, daysLeft: number): string {
   const price = (subscription.price / 100).toFixed(2);
   const daysText = daysLeft === 1 ? 'день' : daysLeft < 5 ? 'дня' : 'дней';
