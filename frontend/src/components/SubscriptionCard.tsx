@@ -12,7 +12,9 @@ export function SubscriptionCard({ subscription, onClick }: SubscriptionCardProp
     ? 'Списание каждый месяц' 
     : `Списание каждые ${periodMonths} ${getMonthsWord(periodMonths)}`;
   
-  const notifyText = subscription.notifyDaysBefore === 1
+  const notifyText = subscription.notifyDaysBefore === 0
+    ? 'Уведомление в день списания'
+    : subscription.notifyDaysBefore === 1
     ? 'Уведомление придет за 1 день'
     : `Уведомление придет за ${subscription.notifyDaysBefore} ${getDaysWord(subscription.notifyDaysBefore)}`;
 

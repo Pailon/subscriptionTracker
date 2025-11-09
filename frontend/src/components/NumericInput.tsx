@@ -68,8 +68,10 @@ export function NumericInput({
         <button
           type="button"
           onClick={handleDone}
-          className="fixed bottom-0 left-0 right-0 bg-blue-600 text-white py-3 font-medium text-center z-50 shadow-lg"
-          style={{ 
+          className="fixed left-0 right-0 bg-blue-600 text-white py-3 font-medium text-center shadow-lg"
+          style={{
+            bottom: '80px',
+            zIndex: 9999,
             animation: 'slideUpKeyboard 0.3s ease-out',
           }}
         >

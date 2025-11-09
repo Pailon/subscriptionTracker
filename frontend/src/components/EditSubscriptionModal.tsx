@@ -168,7 +168,7 @@ export function EditSubscriptionModal({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <NumericInput
                 label="Цена"
@@ -231,7 +231,7 @@ export function EditSubscriptionModal({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <NumericInput
                 label="Длительность (месяцев)"
@@ -270,7 +270,15 @@ export function EditSubscriptionModal({
             <label htmlFor="autoRenewal" className="text-sm text-gray-700">
               <span className="font-medium">Автопродление</span>
               <p className="text-xs text-gray-500 mt-0.5">
-                Подписка будет отображаться в календаре и приходить уведомления каждые {formData.periodMonths || 1} {formData.periodMonths === 1 ? 'месяц' : formData.periodMonths && formData.periodMonths < 5 ? 'месяца' : 'месяцев'}
+                {formData.periodMonths && formData.periodMonths > 0
+                  ? `Подписка будет отображаться в календаре и уведомления будут приходить ${
+                      formData.periodMonths === 1
+                        ? 'каждый месяц'
+                        : `каждые ${formData.periodMonths} ${
+                            formData.periodMonths < 5 ? 'месяца' : 'месяцев'
+                          }`
+                    }`
+                  : 'Подписка будет отображаться в календаре и уведомления будут приходить'}
               </p>
             </label>
           </div>
